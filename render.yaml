@@ -1,0 +1,21 @@
+# Blueprint para desplegar CanchaYa como PaaS en Render (https://render.com).
+# Los secretos se generan en la plataforma: NO están en el repositorio.
+services:
+  - type: web
+    name: canchaya
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/salud
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_KEY
+        generateValue: true
+      - key: SEED_ADMIN_PASSWORD
+        sync: false        # se ingresa manualmente en el panel de Render
+      # En el plan gratuito el disco es efímero (los datos se reinician al redesplegar).
+      # Para persistencia: agregar un disco y definir DB_PATH=/var/data/canchaya.db

@@ -1,0 +1,44 @@
+@startuml
+!include common.iuml
+title Secuencia del flujo principal: reservar y pagar (prototipo)
+actor Jugador as J
+participant "Navegador\n(app.js)" as UI
+participant "Middlewares\n(helmet, rate limit,\nCSRF, JWT, RBAC)" as MW
+participant "Rutas /api/reservas" as R
+participant "service.crearReserva" as S
+database "SQLite" as DB
+participant "Pasarela\nsimulada" as PG
+
+J -> UI : elige cancha, fecha y bloque
+UI -> MW : POST /api/reservas {cancha_id, fecha, hora_inicio}\n+ cookie JWT + X-Requested-With
+MW -> MW : valida cabecera CSRF, token y rol JUGADOR
+MW -> R : solicitud autenticada
+R -> R : valida entradas (lista permitida)
+R -> S : crearReserva(...)
+S -> DB : BEGIN; expirar solicitudes vencidas
+S -> DB : SELECT precio de la cancha (el monto sale de la BD)
+S -> DB : INSERT reserva (SOLICITADA)
+alt bloque libre
+  DB --> S : ok
+  S --> R : reserva
+  R -> DB : INSERT auditoría RESERVA_CREADA
+  R --> UI : 201 {reserva, vence en 10 min}
+  UI -> MW : POST /api/reservas/:id/pagar {medio, tarjeta}
+  MW -> R : autenticada
+  R -> DB : SELECT reserva WHERE id AND jugador_id = usuario (anti-IDOR)
+  alt tarjeta aprobada
+    R -> PG : autorizar(tarjeta)  «no se persiste»
+    PG --> R : aprobado + referencia
+    R -> DB : UPDATE reserva = PAGADA; INSERT pago APROBADO
+    R --> UI : 200 PAGADA + comprobante
+  else tarjeta rechazada
+    PG --> R : rechazado
+    R -> DB : INSERT pago RECHAZADO (reserva sigue SOLICITADA)
+    R --> UI : 402 pago rechazado, puede reintentar
+  end
+else bloque ya tomado
+  DB --> S : violación de índice único
+  S --> R : HttpError 409
+  R --> UI : 409 «Ese bloque ya fue reservado»
+end
+@enduml

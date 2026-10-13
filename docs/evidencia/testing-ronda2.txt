@@ -1,0 +1,129 @@
+
+> canchaya@0.1.0 test
+> node --test --test-reporter=spec "test/*.test.js"
+
+▶ Pruebas funcionales (caja negra) - flujo principal
+  ✔ CP-01 registro válido crea cuenta JUGADOR con contraseña hasheada y teléfono cifrado (106.281984ms)
+  ✔ CP-02 login válido entrega cookie HttpOnly + SameSite=Strict y /me devuelve el teléfono descifrado (17.866975ms)
+  ✔ CP-03 catálogo filtra por deporte y comuna (13.936901ms)
+  ✔ CP-04 disponibilidad de una cancha futura muestra todos sus bloques libres con precio (5.35871ms)
+  ✔ CP-05 reservar un bloque libre crea la reserva SOLICITADA con el monto del servidor y lo marca ocupado (22.193823ms)
+  ✔ CP-06 pagar con tarjeta válida deja la reserva PAGADA, registra el pago y NO guarda la tarjeta (14.582832ms)
+  ✔ CP-07 un pago rechazado mantiene la reserva SOLICITADA y permite reintentar (19.805152ms)
+  ✔ CP-08 pagar en el recinto deja la reserva CONFIRMADA con pago PENDIENTE (14.249478ms)
+  ✔ CP-09 "mis reservas" lista solo las reservas del usuario autenticado (27.164571ms)
+  ✔ CP-10 cancelar con 24 h o más de anticipación devuelve el 100 %; con menos, 0 % (26.558512ms)
+  ✔ CP-11 una reserva sin pago se cancela a los 10 minutos, libera el bloque y ya no admite pago (17.612957ms)
+  ✔ CP-12 el administrador crea cancha, registra reserva presencial, la completa y consulta el calendario (23.487363ms)
+✔ Pruebas funcionales (caja negra) - flujo principal (358.196518ms)
+▶ Pruebas de valores límite y validación de entradas
+  ✔ CL-01 horas en el borde del horario: 8 y 23 se rechazan; 9 y 22 se aceptan (cancha abierta de 9 a 23) (163.465133ms)
+  ✔ CL-02 fechas inválidas: pasada, más allá de 60 días, inexistente, texto y bloque ya iniciado hoy (44.541061ms)
+  ✔ CL-03 hora de inicio no entera o fuera de 0-23 se rechaza (38.325698ms)
+  ✔ CL-04 precio de cancha negativo, cero, bajo el mínimo, texto o exagerado se rechaza (35.392765ms)
+  ✔ CL-05 registro con datos inválidos (contraseña débil, correo, nombre, teléfono, sin consentimiento) se rechaza (21.198566ms)
+  ✔ CL-06 correo duplicado se rechaza con mensaje neutro (sin confirmar que la cuenta existe) (8.279963ms)
+  ✔ CL-07 cuerpo de más de 10 KB se rechaza con 413 (4.670933ms)
+  ✔ CL-08 20 solicitudes simultáneas al mismo bloque: exactamente una reserva se crea (150.80123ms)
+  ✔ CL-09 bloques consecutivos de la misma cancha no se bloquean entre sí (10.390568ms)
+  ✔ CL-10 tarjetas con formato inválido o dígito verificador incorrecto se rechazan sin crear pago (21.13884ms)
+  ✔ CL-11 identificadores inválidos o inexistentes: 400 y 404 respectivamente (17.200218ms)
+  ✔ CL-12 pagar dos veces la misma reserva: el segundo intento se rechaza y queda un solo pago (11.739195ms)
+✔ Pruebas de valores límite y validación de entradas (578.328974ms)
+▶ Pruebas de seguridad (OWASP Top 10 / ISO 27000)
+  ✔ CS-01 A03 inyección SQL: payloads en login y filtros no autentican, no filtran datos ni dañan las tablas (118.756254ms)
+  ✖ CS-02 A03 XSS: nombres con HTML/script se rechazan y la CSP bloquea scripts externos o en línea (35.128265ms)
+  ✔ CS-03 A01 control de acceso: sin sesión, los recursos protegidos devuelven 401 (9.301215ms)
+  ✔ CS-04 A01 IDOR: un jugador no puede ver, pagar ni cancelar reservas de otro (404) y la reserva no cambia (31.02548ms)
+  ✔ CS-05 A01 RBAC: jugador no accede al panel; admin no reserva como jugador ni opera sobre otro recinto (32.308085ms)
+  ✔ CS-06 A01 asignación masiva: enviar rol=ADMIN_RECINTO al registrarse no otorga privilegios (7.41591ms)
+  ✔ CS-07 A04 integridad de transacciones: el cliente no puede fijar monto ni estado de la reserva (7.841505ms)
+  ✔ CS-08 A07 fuerza bruta: tras 5 intentos fallidos la cuenta se bloquea, incluso con la clave correcta, y luego se libera (23.354295ms)
+  ✔ CS-09 A07 enumeración de usuarios: correo inexistente y clave incorrecta responden igual (8.133149ms)
+  ✔ CS-10 A01 CSRF: una petición que modifica datos sin la cabecera X-Requested-With se rechaza aunque traiga cookie válida (10.44825ms)
+  ✔ CS-11 A05 cabeceras de seguridad: sin X-Powered-By, nosniff, CSP, anti-clickjacking y no-store en la API (4.356181ms)
+  ✔ CS-12 A02/A07 tokens: firmado con otra clave, alg=none, expirado o de usuario inexistente se rechazan (13.516113ms)
+  ✔ CS-13 A07 limitación de tasa: se bloquean los intentos de login repetidos desde una misma IP (429) (52.780339ms)
+  ✔ CS-14 A05 manejo de errores: JSON inválido y rutas inexistentes responden sin trazas ni rutas internas (17.494452ms)
+  ✔ CS-15 A09 auditoría: login fallido, bloqueo, creación de reserva y pago quedan registrados (23.440524ms)
+  ✔ CS-16 A02/Ley 19.628 datos personales: el teléfono está cifrado en reposo y el administrador solo ve los 4 últimos dígitos (24.340474ms)
+  ✔ CS-17 A03 contaminación de parámetros: repetir un filtro (?deporte=a&deporte=b) se rechaza (3.9441ms)
+  ✔ CS-18 A02 exposición de datos sensibles: ninguna respuesta contiene hashes de contraseña (17.227792ms)
+  ✔ CS-19 A07 cierre de sesión: tras logout la cookie se elimina y los recursos protegidos dejan de estar disponibles (16.660755ms)
+  ✔ CS-20 A05 en producción: HSTS activo y cookie de sesión con atributo Secure (23.502134ms)
+  ✖ CS-21 A07 sesión: un token robado antes del cierre de sesión deja de ser válido en el servidor (repetición del token) (15.114696ms)
+  ✖ CS-22 A05 configuración: una ruta inexistente fuera de la API no revela el framework ni usa páginas de error por defecto (5.617341ms)
+✖ Pruebas de seguridad (OWASP Top 10 / ISO 27000) (549.275844ms)
+ℹ tests 46
+ℹ suites 3
+ℹ pass 43
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2094.840805
+
+✖ failing tests:
+
+test at test/seguridad.test.js:26:3
+✖ CS-02 A03 XSS: nombres con HTML/script se rechazan y la CSP bloquea scripts externos o en línea (35.128265ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /script-src 'self'/. Input:
+  
+  "default-src 'none'"
+  
+      at TestContext.<anonymous> (/home/claude/canchaya/test/seguridad.test.js:36:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "default-src 'none'",
+    expected: /script-src 'self'/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at test/seguridad.test.js:231:3
+✖ CS-21 A07 sesión: un token robado antes del cierre de sesión deja de ser válido en el servidor (repetición del token) (15.114696ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  200 !== 401
+  
+      at TestContext.<anonymous> (/home/claude/canchaya/test/seguridad.test.js:237:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 401,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/seguridad.test.js:241:3
+✖ CS-22 A05 configuración: una ruta inexistente fuera de la API no revela el framework ni usa páginas de error por defecto (5.617341ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /Cannot GET|Express/i. Input:
+  
+  '<!DOCTYPE html>\n' +
+    '<html lang="en">\n' +
+    '<head>\n' +
+    '<meta charset="utf-8">\n' +
+    '<title>Error</title>\n' +
+    '</head>\n' +
+    '<body>\n' +
+    '<pre>Cannot GET /ruta-que-no-existe</pre>\n' +
+    '</body>\n' +
+    '</html>\n'
+  
+      at TestContext.<anonymous> (/home/claude/canchaya/test/seguridad.test.js:244:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot GET /ruta-que-no-existe</pre>\n</body>\n</html>\n',
+    expected: /Cannot GET|Express/i,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }

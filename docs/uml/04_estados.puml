@@ -1,0 +1,24 @@
+@startuml
+!include common.iuml
+title Estados de una reserva en el prototipo
+[*] --> Solicitada : jugador reserva un bloque libre
+Solicitada --> Pagada : pago con tarjeta aprobado
+Solicitada --> Confirmada : elige pagar en el recinto
+Solicitada --> Cancelada : pasan 10 minutos sin pago /\njugador o recinto cancela
+Pagada --> Cancelada : jugador (devolución 100 % si faltan 24 h o más)\no recinto (devolución total)
+Confirmada --> Cancelada : jugador o recinto cancela
+Pagada --> Completada : recinto confirma, bloque ya comenzó
+Confirmada --> Completada : recinto confirma, bloque ya comenzó
+Pagada --> NoPresentada : recinto registra inasistencia
+Confirmada --> NoPresentada : recinto registra inasistencia
+Cancelada --> [*]
+Completada --> [*]
+NoPresentada --> [*]
+Cancelada : libera el bloque
+Solicitada : bloque retenido 10 minutos
+note right of Solicitada
+  Cambio respecto de la Unidad 2: se eliminó el estado
+  «Reprogramada». En el MVP se reprograma cancelando
+  y reservando de nuevo.
+end note
+@enduml

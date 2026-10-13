@@ -1,0 +1,69 @@
+:root {
+  --verde: #14764a; --verde-osc: #0d5535; --verde-cl: #e6f4ec;
+  --tinta: #1d2a24; --gris: #5b6862; --linea: #d5ddd8; --fondo: #f4f7f5; --blanco: #fff;
+  --rojo: #b3261e; --rojo-cl: #fdeceb; --ambar: #8a5a00; --ambar-cl: #fff3d6; --azul: #1d5fa8; --azul-cl: #e5f0fb;
+  --radio: 10px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--tinta); background: var(--fondo); line-height: 1.45; }
+.saltar { position: absolute; left: -999px; } .saltar:focus { left: 8px; top: 8px; background: #fff; padding: 8px; z-index: 10; }
+.top { background: var(--verde); color: #fff; }
+.top-in { max-width: 1040px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.marca { font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+.marca-logo { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 5px solid #8fd1ae; }
+nav { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+nav button { background: transparent; color: #fff; border: 1px solid transparent; padding: 8px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
+nav button:hover, nav button.activo { background: rgba(255,255,255,.18); }
+nav .usuario { font-size: .9rem; opacity: .9; margin-right: 6px; }
+main { max-width: 1040px; margin: 0 auto; padding: 20px 16px 40px; outline: none; }
+h1 { font-size: 1.5rem; margin: 0 0 4px; } h2 { font-size: 1.15rem; margin: 0 0 10px; } p.sub { color: var(--gris); margin: 0 0 16px; }
+.tarjeta { background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio); padding: 16px; margin-bottom: 14px; }
+.fila { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.campo { display: flex; flex-direction: column; gap: 4px; min-width: 160px; flex: 1; }
+.campo label { font-size: .85rem; font-weight: 600; color: var(--gris); }
+input, select { font: inherit; padding: 9px 10px; border: 1px solid #aeb9b3; border-radius: 8px; background: #fff; color: var(--tinta); }
+input:focus, select:focus, button:focus-visible { outline: 3px solid #86c9a6; outline-offset: 1px; }
+.ayuda { font-size: .8rem; color: var(--gris); }
+button.btn { font: inherit; font-weight: 600; background: var(--verde); color: #fff; border: 0; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+button.btn:hover { background: var(--verde-osc); } button.btn:disabled { background: #9fb3a9; cursor: not-allowed; }
+button.sec { background: #fff; color: var(--verde); border: 1px solid var(--verde); } button.sec:hover { background: var(--verde-cl); }
+button.peligro { background: #fff; color: var(--rojo); border: 1px solid var(--rojo); } button.peligro:hover { background: var(--rojo-cl); }
+button.mini { padding: 5px 10px; font-size: .85rem; }
+.tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.tabs button { flex: 1; padding: 10px; border: 1px solid var(--linea); background: #fff; cursor: pointer; font: inherit; font-weight: 600; border-radius: 8px; }
+.tabs button.activo { background: var(--verde); color: #fff; border-color: var(--verde); }
+.auth { max-width: 460px; margin: 20px auto; }
+.auth form { display: flex; flex-direction: column; gap: 12px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; }
+.check input { margin-top: 4px; }
+.grid-canchas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.cancha h3 { margin: 0; font-size: 1.05rem; } .cancha .rec { color: var(--gris); font-size: .9rem; }
+.precio { font-weight: 700; color: var(--verde-osc); margin: 6px 0 10px; }
+.bloques { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; margin-top: 10px; }
+.bloque { padding: 10px 6px; border-radius: 8px; border: 1px solid var(--verde); background: var(--verde-cl); color: var(--verde-osc); font: inherit; font-weight: 600; cursor: pointer; }
+.bloque:hover { background: #d3ecdf; }
+.bloque[disabled] { background: #eceeed; border-color: var(--linea); color: #8a948f; cursor: not-allowed; }
+.bloque.elegido { background: var(--verde); color: #fff; }
+.resumen { background: var(--verde-cl); border-radius: 8px; padding: 12px; margin: 10px 0; }
+.radios { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.radios label { display: flex; gap: 8px; align-items: center; }
+.insignia { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: .78rem; font-weight: 700; }
+.i-SOLICITADA { background: var(--ambar-cl); color: var(--ambar); } .i-PAGADA, .i-COMPLETADA { background: var(--verde-cl); color: var(--verde-osc); }
+.i-CONFIRMADA { background: var(--azul-cl); color: var(--azul); } .i-CANCELADA, .i-NO_PRESENTADA { background: var(--rojo-cl); color: var(--rojo); }
+.reserva { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+.reserva .datos { flex: 1; min-width: 220px; } .reserva .cod { font-family: ui-monospace, monospace; font-size: .85rem; color: var(--gris); }
+.acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi { background: #fff; border: 1px solid var(--linea); border-radius: var(--radio); padding: 12px; } .kpi b { display: block; font-size: 1.4rem; color: var(--verde-osc); } .kpi span { font-size: .85rem; color: var(--gris); }
+.tabla-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; background: #fff; font-size: .9rem; }
+th, td { border: 1px solid var(--linea); padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background: #eef3f0; } td.libre { color: #8a948f; } td.ocupada { background: var(--verde-cl); }
+td .quien { font-weight: 600; } td .peq { font-size: .78rem; color: var(--gris); }
+#aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); max-width: 92vw; z-index: 20; }
+.msg { padding: 12px 16px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.18); font-weight: 600; margin-top: 8px; }
+.msg.ok { background: var(--verde); color: #fff; } .msg.error { background: var(--rojo); color: #fff; }
+.vacio { color: var(--gris); text-align: center; padding: 20px; }
+.pie { text-align: center; color: var(--gris); font-size: .82rem; padding: 18px; }
+.oculto { display: none; }
+@media (max-width: 560px) { h1 { font-size: 1.25rem; } .top-in { padding: 10px 12px; } }

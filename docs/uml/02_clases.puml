@@ -1,0 +1,97 @@
+@startuml
+!include common.iuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 45
+title Diagrama de clases del prototipo (coincide con el esquema de la base de datos)
+
+class Usuario {
+  - id: int
+  - nombre: String
+  - email: String «único»
+  - telefonoEnc: String «AES-256-GCM»
+  - passwordHash: String «bcrypt»
+  - rol: JUGADOR | ADMIN_RECINTO
+  - intentosFallidos: int
+  - bloqueadoHasta: long
+  - tokenVersion: int
+  + registrar()
+  + autenticar(): Token
+  + cerrarSesion()
+  + eliminarCuenta()
+}
+class Recinto {
+  - id: int
+  - nombre: String
+  - comuna: String
+  - direccion: String
+}
+class Cancha {
+  - id: int
+  - nombre: String
+  - deporte: String
+  - precioHora: int
+  - horaApertura: int
+  - horaCierre: int
+  - activa: boolean
+  + disponibilidad(fecha): List<Bloque>
+}
+class Reserva {
+  - id: int
+  - codigo: String «8 hex»
+  - fecha: String
+  - horaInicio: int
+  - estado: EstadoReserva
+  - monto: int «lo fija el servidor»
+  - origen: APP | PRESENCIAL
+  - clienteNombre: String
+  - creadaEn: long
+  + crear()
+  + pagar(medio)
+  + cancelar(): devolucion
+  + marcar(estado)
+}
+class Pago {
+  - id: int
+  - monto: int
+  - medio: String
+  - estado: EstadoPago
+  - referencia: String «sin datos de tarjeta»
+}
+class Auditoria {
+  - id: int
+  - ts: long
+  - accion: String
+  - detalle: String
+  - ip: String
+}
+enum EstadoReserva {
+  SOLICITADA
+  CONFIRMADA
+  PAGADA
+  CANCELADA
+  COMPLETADA
+  NO_PRESENTADA
+}
+enum EstadoPago {
+  APROBADO
+  RECHAZADO
+  PENDIENTE
+  REEMBOLSADO
+}
+
+Usuario "1" -- "0..1" Recinto : administra >
+Recinto "1" *-- "1..*" Cancha
+Cancha "1" -- "0..*" Reserva
+Usuario "0..1" -- "0..*" Reserva : realiza >
+Reserva "1" *-- "0..*" Pago
+Usuario "0..1" -- "0..*" Auditoria : genera >
+Reserva .right.> EstadoReserva
+Pago .right.> EstadoPago
+note bottom of Reserva
+  Índice único parcial (cancha, fecha, hora)
+  para reservas vivas: impide dobles reservas
+  a nivel de base de datos.
+end note
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+!include common.iuml
+left to right direction
+skinparam packageStyle rectangle
+title Casos de uso del prototipo (Unidad 3)
+actor "Jugador" as J
+actor "Administrador\nde Recinto" as AR
+actor "Pasarela de pagos\n(simulada)" as PP <<sistema externo>>
+
+rectangle "CanchaYa – prototipo" {
+  usecase "Registrarse / iniciar sesión" as UC1
+  usecase "Buscar canchas" as UC2
+  usecase "Ver disponibilidad" as UC3
+  usecase "Reservar bloque" as UC4
+  usecase "Pagar (tarjeta simulada)" as UC5
+  usecase "Pagar en el recinto" as UC5b
+  usecase "Cancelar reserva" as UC6
+  usecase "Eliminar mi cuenta" as UC7
+  usecase "Ver calendario del recinto" as UC8
+  usecase "Registrar reserva presencial" as UC9
+  usecase "Marcar completada /\nno presentada" as UC10
+  usecase "Crear cancha" as UC11
+  usecase "Registrar evento\nen auditoría" as UC12
+}
+J --> UC1
+J --> UC2
+J --> UC4
+J --> UC6
+J --> UC7
+AR --> UC1
+AR --> UC8
+AR --> UC9
+AR --> UC10
+AR --> UC11
+UC2 ..> UC3 : <<include>>
+UC4 ..> UC3 : <<include>>
+UC5 ..> UC4 : <<extend>>
+UC5b ..> UC4 : <<extend>>
+UC4 ..> UC12 : <<include>>
+UC5 ..> UC12 : <<include>>
+UC6 ..> UC12 : <<include>>
+UC5 --> PP
+@enduml

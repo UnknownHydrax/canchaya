@@ -1,0 +1,29 @@
+@startuml
+!include common.iuml
+title Despliegue del prototipo (modelo PaaS)
+node "Dispositivo del usuario" as DEV {
+  artifact "Navegador web\n(index.html, app.js, styles.css)" as BR
+}
+cloud "Render (PaaS)" as RN {
+  node "Web Service Node.js 22" as WS {
+    artifact "Express + middlewares de seguridad\n(helmet, rate limit, CSRF, JWT)" as API
+    artifact "Rutas: auth, canchas, reservas, recinto" as RT
+    artifact "Pasarela de pagos simulada" as PS
+    database "SQLite (better-sqlite3)\narchivo canchaya.db" as DB
+  }
+  node "Terminación TLS\n(certificado gestionado)" as TLS
+}
+node "GitHub" as GH {
+  artifact "Repositorio + pruebas\n(npm test)" as REPO
+}
+BR --> TLS : HTTPS
+TLS --> API : HTTP interno
+API --> RT
+RT --> PS
+RT --> DB : consultas parametrizadas
+REPO --> WS : despliegue automático\n(render.yaml)
+note bottom of DB
+  Producción real: migrar a PostgreSQL gestionado
+  (la capa de datos está aislada en db.js).
+end note
+@enduml

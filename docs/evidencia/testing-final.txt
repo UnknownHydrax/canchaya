@@ -1,0 +1,70 @@
+
+> canchaya@0.1.0 test
+> node --test --test-reporter=spec "test/*.test.js"
+
+▶ Configuración y gestión de secretos (ISO 27001 / OWASP A05)
+  ✔ CS-23 en producción la aplicación NO arranca sin JWT_SECRET ni DATA_KEY, ni con secretos débiles (2.845859ms)
+  ✔ CS-24 en producción con secretos fuertes arranca con cookies Secure y clave AES de 32 bytes (1.190581ms)
+✔ Configuración y gestión de secretos (ISO 27001 / OWASP A05) (5.218421ms)
+▶ Pruebas funcionales (caja negra) - flujo principal
+  ✔ CP-01 registro válido crea cuenta JUGADOR con contraseña hasheada y teléfono cifrado (101.667555ms)
+  ✔ CP-02 login válido entrega cookie HttpOnly + SameSite=Strict y /me devuelve el teléfono descifrado (17.612184ms)
+  ✔ CP-03 catálogo filtra por deporte y comuna (12.732162ms)
+  ✔ CP-04 disponibilidad de una cancha futura muestra todos sus bloques libres con precio (6.807709ms)
+  ✔ CP-05 reservar un bloque libre crea la reserva SOLICITADA con el monto del servidor y lo marca ocupado (20.628282ms)
+  ✔ CP-06 pagar con tarjeta válida deja la reserva PAGADA, registra el pago y NO guarda la tarjeta (22.265958ms)
+  ✔ CP-07 un pago rechazado mantiene la reserva SOLICITADA y permite reintentar (21.119207ms)
+  ✔ CP-08 pagar en el recinto deja la reserva CONFIRMADA con pago PENDIENTE (14.921098ms)
+  ✔ CP-09 "mis reservas" lista solo las reservas del usuario autenticado (34.833498ms)
+  ✔ CP-10 cancelar con 24 h o más de anticipación devuelve el 100 %; con menos, 0 % (30.114901ms)
+  ✔ CP-11 una reserva sin pago se cancela a los 10 minutos, libera el bloque y ya no admite pago (26.98333ms)
+  ✔ CP-12 el administrador crea cancha, registra reserva presencial, la completa y consulta el calendario (35.894105ms)
+  ✔ CP-13 eliminar la cuenta anonimiza los datos personales, exige contraseña y no se puede con reservas activas (49.789095ms)
+✔ Pruebas funcionales (caja negra) - flujo principal (439.680412ms)
+▶ Pruebas de valores límite y validación de entradas
+  ✔ CL-01 horas en el borde del horario: 8 y 23 se rechazan; 9 y 22 se aceptan (cancha abierta de 9 a 23) (129.37857ms)
+  ✔ CL-02 fechas inválidas: pasada, más allá de 60 días, inexistente, texto y bloque ya iniciado hoy (48.706811ms)
+  ✔ CL-03 hora de inicio no entera o fuera de 0-23 se rechaza (22.378358ms)
+  ✔ CL-04 precio de cancha negativo, cero, bajo el mínimo, texto o exagerado se rechaza (27.994149ms)
+  ✔ CL-05 registro con datos inválidos (contraseña débil, correo, nombre, teléfono, sin consentimiento) se rechaza (18.817861ms)
+  ✔ CL-06 correo duplicado se rechaza con mensaje neutro (sin confirmar que la cuenta existe) (7.870425ms)
+  ✔ CL-07 cuerpo de más de 10 KB se rechaza con 413 (3.338368ms)
+  ✔ CL-08 20 solicitudes simultáneas al mismo bloque: exactamente una reserva se crea (148.905931ms)
+  ✔ CL-09 bloques consecutivos de la misma cancha no se bloquean entre sí (9.929261ms)
+  ✔ CL-10 tarjetas con formato inválido o dígito verificador incorrecto se rechazan sin crear pago (19.582709ms)
+  ✔ CL-11 identificadores inválidos o inexistentes: 400 y 404 respectivamente (20.089451ms)
+  ✔ CL-12 pagar dos veces la misma reserva: el segundo intento se rechaza y queda un solo pago (12.159024ms)
+✔ Pruebas de valores límite y validación de entradas (516.618874ms)
+▶ Pruebas de seguridad (OWASP Top 10 / ISO 27000)
+  ✔ CS-01 A03 inyección SQL: payloads en login y filtros no autentican, no filtran datos ni dañan las tablas (133.791464ms)
+  ✔ CS-02 A03 XSS: nombres con HTML/script se rechazan y la CSP bloquea scripts externos o en línea (48.684957ms)
+  ✔ CS-03 A01 control de acceso: sin sesión, los recursos protegidos devuelven 401 (15.781373ms)
+  ✔ CS-04 A01 IDOR: un jugador no puede ver, pagar ni cancelar reservas de otro (404) y la reserva no cambia (37.02854ms)
+  ✔ CS-05 A01 RBAC: jugador no accede al panel; admin no reserva como jugador ni opera sobre otro recinto (43.091641ms)
+  ✔ CS-06 A01 asignación masiva: enviar rol=ADMIN_RECINTO al registrarse no otorga privilegios (6.138626ms)
+  ✔ CS-07 A04 integridad de transacciones: el cliente no puede fijar monto ni estado de la reserva (6.221008ms)
+  ✔ CS-08 A07 fuerza bruta: tras 5 intentos fallidos la cuenta se bloquea, incluso con la clave correcta, y luego se libera (22.473697ms)
+  ✔ CS-09 A07 enumeración de usuarios: correo inexistente y clave incorrecta responden igual (8.047554ms)
+  ✔ CS-10 A01 CSRF: una petición que modifica datos sin la cabecera X-Requested-With se rechaza aunque traiga cookie válida (6.650821ms)
+  ✔ CS-11 A05 cabeceras de seguridad: sin X-Powered-By, nosniff, CSP, anti-clickjacking y no-store en la API (2.278936ms)
+  ✔ CS-12 A02/A07 tokens: firmado con otra clave, alg=none, expirado o de usuario inexistente se rechazan (7.633397ms)
+  ✔ CS-13 A07 limitación de tasa: se bloquean los intentos de login repetidos desde una misma IP (429) (38.684489ms)
+  ✔ CS-14 A05 manejo de errores: JSON inválido y rutas inexistentes responden sin trazas ni rutas internas (6.806807ms)
+  ✔ CS-15 A09 auditoría: login fallido, bloqueo, creación de reserva y pago quedan registrados (15.966487ms)
+  ✔ CS-16 A02/Ley 19.628 datos personales: el teléfono está cifrado en reposo y el administrador solo ve los 4 últimos dígitos (18.271072ms)
+  ✔ CS-17 A03 contaminación de parámetros: repetir un filtro (?deporte=a&deporte=b) se rechaza (3.178635ms)
+  ✔ CS-18 A02 exposición de datos sensibles: ninguna respuesta contiene hashes de contraseña (12.696194ms)
+  ✔ CS-19 A07 cierre de sesión: tras logout la cookie se elimina y los recursos protegidos dejan de estar disponibles (10.219445ms)
+  ✔ CS-20 A05 en producción: HSTS activo y cookie de sesión con atributo Secure (17.836507ms)
+  ✔ CS-21 A07 sesión: un token robado antes del cierre de sesión deja de ser válido en el servidor (repetición del token) (11.971045ms)
+  ✔ CS-22 A05 configuración: una ruta inexistente fuera de la API no revela el framework ni usa páginas de error por defecto (13.895607ms)
+  ✔ CS-25 A07/Ley 21.719 tras eliminar la cuenta, el token anterior queda inválido y el administrador no puede usar esa vía (29.73127ms)
+✔ Pruebas de seguridad (OWASP Top 10 / ISO 27000) (562.588673ms)
+ℹ tests 50
+ℹ suites 4
+ℹ pass 50
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2231.220419
